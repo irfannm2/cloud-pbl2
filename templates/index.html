@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<form action="/create-container" method="POST">
+    <label for="image_name">Image name:</label>
+    <input type="text" name="image_name" required>
+    <br>
+    <label for="container_name">Container name:</label>
+    <input type="text" name="container_name" required>
+    <br>
+    <label for="container_port">Container port:</label>
+    <input type="text" name="container_port" pattern="^(\d{1,5}|\d{1,5}:\d{1,5})$" required>
+    <br>
+    <input type="submit" value="Create container">
+</html>
+  
