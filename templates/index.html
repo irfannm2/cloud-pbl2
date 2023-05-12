@@ -1,14 +1,36 @@
 <!DOCTYPE html>
-<form action="/create-container" method="POST">
-    <label for="image_name">Image name:</label>
-    <input type="text" name="image_name" required>
-    <br>
-    <label for="container_name">Container name:</label>
-    <input type="text" name="container_name" required>
-    <br>
-    <label for="container_port">Container port:</label>
-    <input type="text" name="container_port" pattern="^(\d{1,5}|\d{1,5}:\d{1,5})$" required>
-    <br>
-    <input type="submit" value="Create container">
+<html>
+  <head>
+    <title>Create Docker Container</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+  </head>
+  <body class="bg-gray-200 flex items-center justify-center h-screen">
+    <div class="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full">
+      <h1 class="text-2xl font-medium mb-6">Create Docker Container</h1>
+      <form action="/create-container" method="POST">
+        <div class="mb-4">
+          <label class="block text-gray-700 font-bold mb-2" for="image_name">
+            Image name
+            <a class="text-blue-500 text-xs underline" href="https://hub.docker.com/search?image_filter=official&type=image&q=">Refer to this page</a>
+          </label>
+          <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="image_name" name="image_name" type="text" placeholder="Redis" required>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 font-bold mb-2" for="container_name">
+            Container name
+          </label>
+          <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="container_name" name="container_name" type="text" placeholder="Redis_Uno" required>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 font-bold mb-2" for="container_port">
+            Container port
+          </label>
+          <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="container_port" name="container_port" type="text" placeholder="80:8080" pattern="^(\d{1,5}|\d{1,5}:\d{1,5})$" required>
+        </div>
+        <div class="flex items-center justify-between">
+          <input class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" value="Create container">
+        </div>
+      </form>
+    </div>
+  </body>
 </html>
-  
