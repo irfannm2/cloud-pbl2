@@ -1,13 +1,55 @@
-from flask import Flask, request, render_template
+from flask import Flask, render_template, request, flash, redirect, url_for
 import docker
 import docker.errors
+import os
+import secrets
 
 app = Flask(__name__)
 client = docker.from_env()
+app.secret_key = os.environ.get('SECRET_KEY') or secrets.token_hex(16)
 
 @app.route('/')
 def home():
+    return render_template('/login.html')
+
+@app.route('/docker-login', methods=['POST'])
+def docker_login():
+    try:
+        # Authenticate with Docker using the provided credentials
+        client.login(username=request.form['docker_username'], password=request.form['docker_password'])
+
+        # If login is successful, show a flash message and redirect to index.html
+        # It stores a message in the session,
+        # which can then be displayed on the next web page that the user visits
+        flash('Successfully logged in!')
+        return redirect(url_for('index'))
+
+    except docker.errors.APIError:
+        flash('Invalid credentials. Please try again.')
+        return redirect(url_for('home'))
+    
+@app.route('/index')
+def index():
     return render_template('/index.html')
+
+# @app.route('/build-image', methods=['POST'])
+# def build_image():
+    # try:
+        # Path to directory containing Dockerfile
+        # path = "/path/to/dockerfile/directory"
+        # Build the image
+        # output = client.images.build(path=path, tag="my-image", quiet=False)
+        # Print output from build process
+        # for line in output[1]:
+            # print(line)
+        # Return a message indicating success
+        # return "Image built successfully"
+    # except docker.errors.BuildError as e:
+        # Handle build errors
+        # return "Error building image: " + str(e)
+    # except docker.errors.APIError as e:
+        # Handle API errors
+        # return "Error communicating with Docker API: " + str(e)
 
 @app.route('/create-container', methods=['POST'])
 def create_container():

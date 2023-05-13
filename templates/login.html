@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Create Docker Container</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+  </head>
+  <body class="bg-gray-200 flex items-center justify-center h-screen">
+    <div class="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full">
+      <h1 class="text-2xl font-medium mb-6">Login</h1>
+      <form action="/docker-login" method="POST">
+        <div class="mb-4">
+          <label class="block text-gray-700 font-bold mb-2" for="docker_username">
+            Username
+          </label>
+          <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="docker_username" name="docker_username" type="text" placeholder="Enter your Docker username" required>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 font-bold mb-2" for="docker_password">
+            Password
+          </label>
+          <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="docker_password" name="docker_password" type="password" placeholder="Enter your password" required>
+        </div>
+        <div class="flex items-center justify-between">
+          <input class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" value="Login">
+        </div>
+        <div class="mb-1">
+            <p class="text-gray-700">Don't have an account yet? <a href="https://hub.docker.com/signup" class="font-bold text-blue-500">Sign Up</a></p>
+          </div>
+      </form>
+    </div>
+  </body>
+</html>
