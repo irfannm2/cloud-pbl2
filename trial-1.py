@@ -4,6 +4,10 @@ import docker.errors
 
 app = Flask(__name__)
 client = docker.from_env()
+# import docker
+
+# client = docker.APIClient()
+
 
 @app.route('/')
 def home():
