@@ -3,6 +3,6 @@ repository untuk project PBL2 (Layanan Berbasis Docker) kelas Cloud Computing KO
 
 ## Team Members
 - Faya ()
-- Feli ()
+- Feli (feliseureka)
 - Hanna (hansoee)
 - Irfan (irfannm2)
