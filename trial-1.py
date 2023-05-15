@@ -67,8 +67,8 @@ def create_container():
         # NEXT: might want to add dropdown choices instead of text type
         client.images.pull(request.form['image_name'])
 
-        # Run the container
-        container = client.containers.run(
+        # Create the container
+        container = client.containers.create(
             request.form['image_name'],
             name=request.form['container_name'],
             ports={int(container_port): int(host_port)} if host_port else int(container_port),
