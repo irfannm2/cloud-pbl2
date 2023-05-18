@@ -75,6 +75,10 @@ def create_container():
             detach=True
         )
         return 'Container created successfully!'
+
+        # Start the container
+        container.start();
+
     except docker.errors.ContainerError as e:
         return 'Error creating container: ' + str(e)
     except docker.errors.ImageNotFound as e:
