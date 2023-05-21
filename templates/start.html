@@ -8,9 +8,12 @@
     </head>
     <body class="cont_body">
         <div class="cont_start">
-            <button class="cont1_start">
+            <form method="POST" action="{{ url_for('start_container') }}">
+                <button type="submit">Start</button>
+            </form>
+            <!-- <button class="cont1_start">
                 start
-            </button>
+            </button> -->
         </div>
         <div class="cont_stop">
             <button class="cont1_stop">

@@ -74,11 +74,41 @@ def create_container():
             ports={int(container_port): int(host_port)} if host_port else int(container_port),
             detach=True
         )
-        return 'Container created successfully!'
+        # return 'Container created successfully!'
 
-        # Start the container
-        container.start();
+        # Redirect to start.html
+        return redirect(url_for('start_container'))
 
+        # # Start the container
+        # container.start();
+
+    except docker.errors.NotFound as e:
+        return 'Error: Container not found'
+    except docker.errors.APIError as e:
+        return 'Error communicating with Docker API: ' + str(e)
+
+@app.route('/start_container', methods=['GET', 'POST'])
+def start_container():
+    if request.method == 'POST':
+        try:
+            # Find the container based on the name
+            container = client.containers.get(request.form['container_name'])
+
+            # Start the container
+            container.start()
+
+            return 'Container started successfully!'
+
+        except docker.errors.NotFound as e:
+            return 'Error: Container not found'
+        except docker.errors.APIError as e:
+            return 'Error communicating with Docker API: ' + str(e)
+    else:
+        # Handle GET request for displaying the start.html page
+        return render_template('start.html')
+
+
+# comment code below to make it no error
     except docker.errors.ContainerError as e:
         return 'Error creating container: ' + str(e)
     except docker.errors.ImageNotFound as e:
