@@ -15,10 +15,17 @@
                 start
             </button> -->
         </div>
-        <div class="cont_stop">
+
+        <!-- <div class="cont_stop">
             <button class="cont1_stop">
                 stop
             </button>
+        </div> -->
+
+        <div class="cont_stop">
+            <form method="POST" action="{{ url_for('stop_container') }}">
+                <button type="submit">Stop</button>
+            </form>
         </div>
 
         <!-- Flash Messages -->

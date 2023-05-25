@@ -136,6 +136,29 @@ def start_container():
         # Handle GET request for displaying the start.html page
         return render_template('start.html')
 
+@app.route('/stop_container', methods=['POST'])
+def stop_container():
+    try:
+        # Retrieve the container ID from the session variable
+        container_id = session.get('container_id')
+
+        # Find the container based on the ID
+        container = client.containers.get(container_id)
+
+        # Stop the container
+        container.stop()
+
+        # return 'Container stopped successfully!'
+        # Display a flash message with the success notification
+        flash('Container stopped successfully!')
+        return render_template('start.html')
+
+    except docker.errors.NotFound as e:
+        return 'Error: Container not found'
+    except docker.errors.APIError as e:
+        return 'Error communicating with Docker API: ' + str(e)
+
+
 # comment code below to make it no error
     # except docker.errors.ContainerError as e:
     #     return 'Error creating container: ' + str(e)
