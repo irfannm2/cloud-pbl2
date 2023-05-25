@@ -6,7 +6,14 @@ import secrets
 
 app = Flask(__name__)
 client = docker.from_env()
+<<<<<<< HEAD
 app.secret_key = os.environ.get('SECRET_KEY') or secrets.token_hex(16)
+=======
+# import docker
+
+# client = docker.APIClient()
+
+>>>>>>> d29c619df237667baa0cced096157a5ab66e9ec2
 
 @app.route('/')
 def home():
