@@ -1,84 +1,121 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title>Create Docker Container</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
-  </head>
-  <body class="bg-gray-200 flex items-center justify-center h-screen">
+    <style>
+        .flashes li {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-200 flex items-center justify-center h-screen">
     <div class="fixed z-50 inset-0 overflow-y-auto">
-      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-    
-        <!-- Background overlay -->
-        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-          <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-        </div>
-    
-        <!-- Notification panel -->
-        <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
-          <div>
-            <!-- Notification message -->
-            {% with messages = get_flashed_messages() %}
-              {% if messages %}
-                <div class="mb-4">
-                  {% for message in messages %}
-                    <p class="text-gray-700">{{ message }}</p>
-                  {% endfor %}
-                </div>
-              {% endif %}
-            {% endwith %}
-    
-            <!-- Okay button -->
-            <div class="mt-5 sm:mt-6">
-              <button type="button" class="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm" onclick="closeNotification()">
-                Okay
-              </button>
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
-          </div>
-    
-          <!-- X button -->
-          <div class="absolute top-0 right-0 pt-4 pr-4">
-            <button type="button" class="text-gray-400 hover:text-gray-500 focus:outline-none focus:text-gray-500 transition ease-in-out duration-150" onclick="closeNotification()">
-              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
+            <!-- Notification panel -->
+            <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
+                <div>
+                    <!-- Notification message -->
+                    {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                    <div class="mb-4">
+                        {% for message in messages %}
+                        <p class="text-gray-700">{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% endwith %}
+                    <!-- Okay button -->
+                    <div class="mt-5 sm:mt-6">
+                        <button type="button" class="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm" onclick="closeNotification()">
+                            Okay
+                        </button>
+                    </div>
+                </div>
+                <!-- X button -->
+                <div class="absolute top-0 right-0 pt-4 pr-4">
+                    <button type="button" class="text-gray-400 hover:text-gray-500 focus:outline-none focus:text-gray-500 transition ease-in-out duration-150" onclick="closeNotification()">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-    
     <script>
-      function closeNotification() {
-        document.querySelector('.fixed').classList.add('hidden');
-      }
-    </script>    
-
+        function closeNotification() {
+            document.querySelector('.fixed').classList.add('hidden');
+        }
+    </script>
     <div class="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full">
-      <h1 class="text-2xl font-medium mb-6">Create Docker Container</h1>
-      <form action="/create-container" method="POST">
-        <div class="mb-4">
-          <label class="block text-gray-700 font-bold mb-2" for="image_name">
-            Image name
-            <a class="text-blue-500 text-xs underline" href="https://hub.docker.com/search?image_filter=official&type=image&q=">Refer to this page</a>
-          </label>
-          <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="image_name" name="image_name" type="text" placeholder="Redis" required>
-        </div>
-        <div class="mb-4">
-          <label class="block text-gray-700 font-bold mb-2" for="container_name">
-            Container name
-          </label>
-          <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="container_name" name="container_name" type="text" placeholder="Redis_Uno" required>
-        </div>
-        <div class="mb-4">
-          <label class="block text-gray-700 font-bold mb-2" for="container_port">
-            Container port
-          </label>
-          <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="container_port" name="container_port" type="text" placeholder="80:8080" pattern="^(\d{1,5}|\d{1,5}:\d{1,5})$" required>
-        </div>
-        <div class="flex items-center justify-between">
-          <input class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" value="Create container">
-        </div>
-      </form>
+        <h1 class="text-2xl font-medium mb-6">Create Docker Container</h1>
+        <form action="/create-container" method="POST">
+            <div class="mb-4">
+                <label class="block text-gray-700 font-bold mb-2" for="image_name">
+                    Image name
+                    <a class="text-blue-500 text-xs underline" href="https://hub.docker.com/search?image_filter=official&type=image&q=">Refer to this page</a>
+                </label>
+                <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="image_name" name="image_name" type="text" placeholder="Redis" required>
+              </div>
+              <div class="mb-4">
+                  <label class="block text-gray-700 font-bold mb-2" for="container_name">
+                      Container name
+                  </label>
+                  <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="container_name" name="container_name" type="text" placeholder="Redis_Uno" required>
+              </div>
+              <div class="mb-4">
+                  <label class="block text-gray-700 font-bold mb-2" for="container_port">
+                      Container port
+                  </label>
+                  <input class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="container_port" name="container_port" type="text" placeholder="80:8080" pattern="^(\d{1,5}|\d{1,5}:\d{1,5})$" required>
+              </div>
+              <div class="flex items-center justify-between">
+                  <input class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit" value="Create container">
+              </div>
+          </form>
     </div>
-  </body>
-</html>
+          
+          <div class="flex justify-between">
+              <form method="POST" action="{{ url_for('start_container') }}">
+                  <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Start</button>
+              </form>
+              <form method="POST" action="/stop_container"></form>
+              <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Stop</button>
+              </form>
+          </div>
+
+          <form action="/list-images" method="POST">
+            <div class="mt-4">
+                <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">List Images</button>
+            </div>
+        </form>
+        
+        <form action="/list-containers" method="POST">
+            <div class="mt-4">
+                <button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">List Containers</button>
+            </div>
+        </form>
+        
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashes mt-4">
+                    {% for message in messages %}
+                        <li class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-2">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+        
+        <form action="/index">
+            <div class="mt-4">
+                <button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Create Containers</button>
+            </div>
+        </form>
+</body>
+        

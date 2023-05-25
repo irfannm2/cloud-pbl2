@@ -1,42 +1,55 @@
 <!DOCTYPE html>
-<!-- <link rel="stylesheet" type="text/css" href="styles.css"> -->
 <html>
     <head>
-        <!-- <div class="cont_header"> -->
-            <!-- start and stop -->
-        <!-- </div> -->
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+        <style>
+            .flashes li {
+                margin-bottom: 0.5rem;
+            }
+        </style>
     </head>
-    <body class="cont_body">
-        <div class="cont_start">
-            <form method="POST" action="{{ url_for('start_container') }}">
-                <button type="submit">Start</button>
+<!-- <<<<<<< Updated upstream -->
+    <body class="bg-gray-200">
+        <div class="container mx-auto p-4">
+            <div class="flex justify-between">
+                <form method="POST" action="{{ url_for('start_container') }}">
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Start</button>
+                </form>
+                <form method="POST" action="/stop_container"></form>
+                <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Stop</button>
+                </form>
+            </div>
+
+            <form action="/list-images" method="POST">
+                <div class="mt-4">
+                    <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">List Images</button>
+                </div>
             </form>
-            <!-- <button class="cont1_start">
-                start
-            </button> -->
-        </div>
 
-        <!-- <div class="cont_stop">
-            <button class="cont1_stop">
-                stop
-            </button>
-        </div> -->
-
-        <div class="cont_stop">
-            <form method="POST" action="{{ url_for('stop_container') }}">
-                <button type="submit">Stop</button>
+            <form action="/list-containers" method="POST">
+                <div class="mt-4">
+                    <button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">List Containers</button>
+                </div>
             </form>
-        </div>
 
-        <!-- Flash Messages -->
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                <ul class="flashes">
-                    {% for message in messages %}
-                        <li>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endwith %}
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <ul class="flashes mt-4">
+                        {% for message in messages %}
+                            <li class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-2">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endwith %}
+
+
+            <form action="/index">
+                <div class="mt-4">
+                    <button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Create Containers</button>
+                </div>
+            </form>
+
+        </div>
     </body>
 </html>

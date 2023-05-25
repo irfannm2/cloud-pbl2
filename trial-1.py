@@ -3,6 +3,7 @@ import docker
 import docker.errors
 import os
 import secrets
+import json
 
 app = Flask(__name__)
 client = docker.from_env()
@@ -51,6 +52,7 @@ def index():
         # Handle API errors
         # return "Error communicating with Docker API: " + str(e)
 
+
 @app.route('/create-container', methods=['POST'])
 def create_container():
     # Split the ":" to extract host port and container port
@@ -92,6 +94,37 @@ def create_container():
         return 'Error: Container not found'
     except docker.errors.APIError as e:
         return 'Error communicating with Docker API: ' + str(e)
+
+
+# LIST IMAGES
+@app.route('/list-images', methods=['GET', 'POST'])
+def list_images():
+    list_img = []
+    for i in client.images.list():
+        img_dict = {
+        'id': i.id,
+        'attrs': i.attrs 
+        }
+        jsd = json.dumps(img_dict)
+        list_img.append(jsd)
+        
+    return list_img
+
+
+# LIST CONTAINERS
+@app.route('/list-containers', methods=['GET', 'POST'])
+def list_containers():
+    containers = []
+    for container in client.containers.list(all=True):
+        con_dict = {
+            'id' : container.id,
+            'attr' : container.attrs
+        }
+        cjd = json.dumps(con_dict)
+        #nanti betulin nama variabel
+        containers.append(cjd)
+
+    return containers
 
 @app.route('/start_container', methods=['GET', 'POST'])
 def start_container():
