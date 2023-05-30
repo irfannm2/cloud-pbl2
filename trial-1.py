@@ -3,15 +3,14 @@ import docker
 import docker.errors
 import os
 import secrets
-import json
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 client = docker.from_env()
 app.secret_key = os.environ.get('SECRET_KEY') or secrets.token_hex(16)
 
 @app.route('/')
 def home():
-    return render_template('/login.html')
+    return render_template('/index.html')
 
 @app.route('/docker-login', methods=['POST'])
 def docker_login():
@@ -28,29 +27,14 @@ def docker_login():
     except docker.errors.APIError:
         flash('Invalid credentials. Please try again.')
         return redirect(url_for('home'))
-    
-@app.route('/index')
-def index():
-    return render_template('/index.html')
 
-# @app.route('/build-image', methods=['POST'])
-# def build_image():
-    # try:
-        # Path to directory containing Dockerfile
-        # path = "/path/to/dockerfile/directory"
-        # Build the image
-        # output = client.images.build(path=path, tag="my-image", quiet=False)
-        # Print output from build process
-        # for line in output[1]:
-            # print(line)
-        # Return a message indicating success
-        # return "Image built successfully"
-    # except docker.errors.BuildError as e:
-        # Handle build errors
-        # return "Error building image: " + str(e)
-    # except docker.errors.APIError as e:
-        # Handle API errors
-        # return "Error communicating with Docker API: " + str(e)
+@app.route('/create-cont')
+def create_cont():
+    return render_template('/create-cont.html')
+
+@app.route('/dockbox')
+def dockbox():
+    return render_template('/dockbox.html')
 
 
 @app.route('/create-container', methods=['POST'])
@@ -100,15 +84,14 @@ def create_container():
 @app.route('/list-images', methods=['GET', 'POST'])
 def list_images():
     list_img = []
-    for i in client.images.list():
-        img_dict = {
-        'id': i.id,
-        'attrs': i.attrs 
+    for image in client.images.list():
+        image_info = {
+            'image_name': image.tags[0] if image.tags else '',
+            'created': image.attrs['Created'],
+            'size': image.attrs['Size'],
         }
-        jsd = json.dumps(img_dict)
-        list_img.append(jsd)
-        
-    return list_img
+        list_img.append(image_info)
+    return render_template('images.html', list_img=list_img)
 
 
 # LIST CONTAINERS
@@ -116,15 +99,14 @@ def list_images():
 def list_containers():
     containers = []
     for container in client.containers.list(all=True):
-        con_dict = {
-            'id' : container.id,
-            'attr' : container.attrs
+        container_info = {
+            'container_id': container.id,
+            'container_name': container.name,
+            'image': container.image.tags[0] if container.image.tags else '',
+            'status': container.status,
         }
-        cjd = json.dumps(con_dict)
-        #nanti betulin nama variabel
-        containers.append(cjd)
-
-    return containers
+        containers.append(container_info)
+    return render_template('containers.html', containers=containers)
 
 @app.route('/start_container', methods=['GET', 'POST'])
 def start_container():
