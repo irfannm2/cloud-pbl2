@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Trial-1
 
 ## Overview
