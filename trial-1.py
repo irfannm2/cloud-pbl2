@@ -12,6 +12,8 @@ app.secret_key = os.environ.get('SECRET_KEY') or secrets.token_hex(16)
 def home():
     return render_template('/index.html')
 
+
+# How to get user run the app without having to open Docker Desktop/login first
 @app.route('/docker-login', methods=['POST'])
 def docker_login():
     try:
@@ -28,6 +30,7 @@ def docker_login():
         flash('Invalid credentials. Please try again.')
         return redirect(url_for('home'))
 
+# go to create container form page
 @app.route('/create-cont')
 def create_cont():
     return render_template('/create-cont.html')
