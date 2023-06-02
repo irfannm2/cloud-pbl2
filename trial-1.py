@@ -133,8 +133,14 @@ def start_container():
             # container.run()
 
             # Retrieve the container ID from the session variable
-            container_id = session.get('container_id')
+            # container_id = session.get('container_id')
+            container_id = request.form.get('container_id')
+            if container_id is None:
+                return 'Error: Container ID is missing'
+            session['container_id'] = container_id
 
+
+            
             # Find the container based on the ID
             container = client.containers.get(container_id)
 
