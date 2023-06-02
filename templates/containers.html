@@ -3,8 +3,23 @@
 <head>
     <title>Container List</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+      .flashes li {
+          margin-bottom: 0.5rem;
+      }
+  </style>
 </head>
 <body>
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages() %}
+  {% if messages %}
+      <ul class="flashes mt-4">
+          {% for message in messages %}
+              <li class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-2">{{ message }}</li>
+          {% endfor %}
+      </ul>
+  {% endif %}
+{% endwith %}
     <table class="min-w-full divide-y divide-gray-200">
         <thead>
           <tr>

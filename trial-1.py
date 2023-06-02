@@ -4,6 +4,10 @@ import docker.errors
 import os
 import secrets
 
+# Uncomment the line below to enable Docker Daemon TCP connection (without TLS)
+# Don't forget to configure the Docker Desktop settings
+# client = docker.DockerClient(base_url='tcp://localhost:2375')
+
 app = Flask(__name__, static_url_path='/static')
 client = docker.from_env()
 app.secret_key = os.environ.get('SECRET_KEY') or secrets.token_hex(16)
@@ -63,19 +67,11 @@ def create_container():
             ports={int(container_port): int(host_port)} if host_port else int(container_port),
             detach=True
         )
-        # return 'Container created successfully!'
 
-        # Redirect to start.html
-        # return redirect(url_for('start_container', container = container))
-
-        # Store the container ID in a session variable
         session['container_id'] = container.id
 
         # Redirect to start.html
         return redirect(url_for('start_container'))
-    
-        # # Start the container
-        # container.start();
 
     except docker.errors.NotFound as e:
         return 'Error: Container not found'
@@ -111,35 +107,13 @@ def list_containers():
         containers.append(container_info)
     return render_template('containers.html', containers=containers)
 
-@app.route('/start_container', methods=['GET', 'POST'])
+@app.route('/start_container', methods=['POST'])
 def start_container():
-    if request.method == 'POST':
-        try:
-            # Find the container based on the name
-            # container = client.containers.get(request.form['container_name'])
-            # container = client.containers.get(container.name)
-            # container_name = request.args.get('container_name')
-            # container = client.containers.get(request.form['container_name'])
-
-            # container_name = request.form.get('container_name')
-            # if container_name is None:
-            #     return 'Error: Container name is missing'
-            # container = client.containers.get(container_name)
-
-            # Find the container based on the name
-            # container = client.containers.get(container_name)
-            # Start the container
-            # container.start()
-            # container.run()
-
-            # Retrieve the container ID from the session variable
-            # container_id = session.get('container_id')
+    try:
             container_id = request.form.get('container_id')
             if container_id is None:
                 return 'Error: Container ID is missing'
             session['container_id'] = container_id
-
-
             
             # Find the container based on the ID
             container = client.containers.get(container_id)
@@ -147,49 +121,43 @@ def start_container():
             # Start the container
             container.start()
 
-            # return 'Container started successfully!'
-            # Display a flash message with the success notification
-            flash('Container started successfully!')
-            return render_template('start.html')
+            # Flash a success message
+            flash('Container started successfully!', 'success')
 
-        except docker.errors.NotFound as e:
-            return 'Error: Container not found'
-        except docker.errors.APIError as e:
-            return 'Error communicating with Docker API: ' + str(e)
-    else:
-        # Handle GET request for displaying the start.html page
-        return render_template('start.html')
+            # Redirect back to the current page
+            return redirect(request.referrer)
+
+    except docker.errors.NotFound as e:
+        return 'Error: Container not found'
+    except docker.errors.APIError as e:
+        return 'Error communicating with Docker API: ' + str(e)
+        
 
 @app.route('/stop_container', methods=['POST'])
 def stop_container():
     try:
-        # Retrieve the container ID from the session variable
-        container_id = session.get('container_id')
+            container_id = request.form.get('container_id')
+            if container_id is None:
+                return 'Error: Container ID is missing'
+            session['container_id'] = container_id
+            
+            # Find the container based on the ID
+            container = client.containers.get(container_id)
 
-        # Find the container based on the ID
-        container = client.containers.get(container_id)
+            # Start the container
+            container.stop()
 
-        # Stop the container
-        container.stop()
+            # Flash a success message
+            flash('Container stopped successfully!', 'success')
 
-        # return 'Container stopped successfully!'
-        # Display a flash message with the success notification
-        flash('Container stopped successfully!')
-        return render_template('start.html')
+            # Redirect back to the current page
+            return redirect(request.referrer)
 
     except docker.errors.NotFound as e:
         return 'Error: Container not found'
     except docker.errors.APIError as e:
         return 'Error communicating with Docker API: ' + str(e)
 
-
-# comment code below to make it no error
-    # except docker.errors.ContainerError as e:
-    #     return 'Error creating container: ' + str(e)
-    # except docker.errors.ImageNotFound as e:
-    #     return 'Error finding image: ' + str(e)
-    # except docker.errors.APIError as e:
-    #     return 'Error communicating with Docker API: ' + str(e)
 
 if __name__ == '__main__':
     app.run(debug=True, host = '0.0.0.0', port = 81)

@@ -37,15 +37,6 @@
                 </div>
             </form>
     </div>
-            <form method="POST" action="{{ url_for('start_container') }}">
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Start</button>
-            </form>
-            <form method="POST" action="/stop_container"></form>
-            <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                Stop
-            </button>
-            </form>
-
         <!-- Flash Messages -->
         {% with messages = get_flashed_messages() %}
             {% if messages %}
