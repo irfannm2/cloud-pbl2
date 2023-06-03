@@ -3,9 +3,24 @@
 <head>
     <title>Image List</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 40px; 
+        }
+    </style>
 </head>
 <body>
-    <table class="min-w-full divide-y divide-gray-200">
+  <!-- Navigation Bar -->
+  <nav class="bg-white shadow fixed w-full z-20 top-0">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+        <a href="/dockbox"><h1 class="text-xl font-bold text-gray-800">DockBox</h1></a>
+        <a href="/list-images">List Images</a>
+        <a href="/list-containers">List Containers</a>
+        <a href="/create-cont">Create Container</a>
+        <button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Login</button>
+    </div>
+  </nav>
+    <table class="min-w-full mt-8 divide-y divide-gray-200">
         <thead>
           <tr>
             <th class="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">

@@ -9,91 +9,73 @@
         }
     </style>
 </head>
-<body class="bg-gray-200 flex items-center justify-center h-screen">
-    <!-- <div class="fixed z-50 inset-0 overflow-y-auto"> -->
-        <!-- <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"> -->
-            <!-- Background overlay -->
-            <!-- <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-            </div> -->
-            <!-- Notification panel -->
-            <!-- <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
-                <div> -->
-                    <!-- Notification message -->
-                    <!-- {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                    <div class="mb-4">
-                        {% for message in messages %}
-                        <p class="text-gray-700">{{ message }}</p>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                    {% endwith %} -->
-                    <!-- Okay button -->
-                    <!-- <div class="mt-5 sm:mt-6">
-                        <button type="button" class="inline-flex justify-center w-full rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-500 text-base font-medium text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:text-sm" onclick="closeNotification()">
-                            Okay
-                        </button>
-                    </div>
-                </div> -->
-                <!-- X button -->
-                <!-- <div class="absolute top-0 right-0 pt-4 pr-4">
-                    <button type="button" class="text-gray-400 hover:text-gray-500 focus:outline-none focus:text-gray-500 transition ease-in-out duration-150" onclick="closeNotification()">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-                </div>
-            </div> -->
-        <!-- </div> -->
-    <!-- </div> -->
-    <!-- <script>
-        function closeNotification() {
-            document.querySelector('.fixed').classList.add('hidden');
-        }
-    </script>  -->
+<body class="h-screen">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow fixed w-full z-20 top-0">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="/dockbox"><h1 class="text-xl font-bold text-gray-800">DockBox</h1></a>
+            <a href="/list-images">List Images</a>
+            <a href="/list-containers">List Containers</a>
+            <a href="/create-cont">Create Container</a>
+            <a href="/login"><button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Login</button></a>
+        </div>
+    </nav>
     <!-- Cards -->
-    <div class="flex flex-wrap justify-center">
-        <div class="max-w-sm rounded overflow-hidden shadow-lg m-4">
-            <img src="/static/container.png" alt="container" class="w-full h-40 object-contain">
-          <div class="px-6 py-4">
-            <div class="font-bold text-xl mb-2">List Images</div>
-            <p class="text-gray-700 text-base">
-                List of all the images you have
-            </p>
-            <a href="/list-images">
-                <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4">List Images</button>
-              </a>
-          </div>
-        </div>
-      
-        <div class="max-w-sm rounded overflow-hidden shadow-lg m-4">
-            <img src="/static/container.png" alt="container" class="w-full h-40 object-contain">
-          <div class="px-6 py-4">
-            <div class="font-bold text-xl mb-2">List Containers</div>
-            <p class="text-gray-700 text-base">
-              List of all the containers you have
-            </p>
-            <a href="/list-containers">
-                <button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mt-4">List Containers</button>
-              </a>
-          </div>
-        </div>
-
-        <div class="max-w-sm rounded overflow-hidden shadow-lg m-4">
-            <img src="/static/container.png" alt="container" class="w-full h-40 object-contain">
-            <div class="px-6 py-4">
-              <div class="font-bold text-xl mb-2">Create Container</div>
-              <p class="text-gray-700 text-base">
-                Create a container
-              </p>
-              <a href="/create-cont">
-                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Create Now</button>
-              </a>
+    <div class="flex items-center justify-center h-screen">
+        <div class="flex flex-wrap justify-center">
+            <div class="max-w-sm rounded overflow-hidden shadow-lg m-4">
+                <img src="/static/container.png" alt="container" class="w-full h-40 object-contain">
+              <div class="px-6 py-4">
+                <div class="font-bold text-xl mb-2">List Images</div>
+                <p class="text-gray-700 text-base">
+                    List of all the images you have
+                </p>
+                <a href="/list-images">
+                    <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4">List Images</button>
+                  </a>
+              </div>
             </div>
-          </div>
+          
+            <div class="max-w-sm rounded overflow-hidden shadow-lg m-4">
+                <img src="/static/container.png" alt="container" class="w-full h-40 object-contain">
+              <div class="px-6 py-4">
+                <div class="font-bold text-xl mb-2">List Containers</div>
+                <p class="text-gray-700 text-base">
+                  List of all the containers you have
+                </p>
+                <a href="/list-containers">
+                    <button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mt-4">List Containers</button>
+                  </a>
+              </div>
+            </div>
+    
+            <div class="max-w-sm rounded overflow-hidden shadow-lg m-4">
+                <img src="/static/container.png" alt="container" class="w-full h-40 object-contain">
+                <div class="px-6 py-4">
+                  <div class="font-bold text-xl mb-2">Create Container</div>
+                  <p class="text-gray-700 text-base">
+                    Create a container
+                  </p>
+                  <a href="/create-cont">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Create Now</button>
+                  </a>
+                </div>
+            </div>
+
+            <div class="max-w-sm rounded overflow-hidden shadow-lg m-4">
+                <img src="/static/billing.png" alt="container" class="w-full h-40 object-contain">
+                <div class="px-6 py-4">
+                  <div class="font-bold text-xl mb-2">Billings</div>
+                  <p class="text-gray-700 text-base">
+                    Pay your bills now
+                  </p>
+                  <a href="/">
+                    <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4">Pay Now</button>
+                  </a>
+                </div>
+            </div>
+        </div>
     </div>
-      
 </body>
 </html>
 
