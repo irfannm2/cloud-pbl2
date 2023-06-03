@@ -3,6 +3,8 @@ import docker
 import docker.errors
 import os
 import secrets
+from datetime import datetime
+from dateutil import parser
 
 # Uncomment the line below to enable Docker Daemon TCP connection (without TLS)
 # Don't forget to configure the Docker Desktop settings
@@ -97,35 +99,70 @@ def list_images():
 @app.route('/list-containers', methods=['GET', 'POST'])
 def list_containers():
     containers = []
+    start_time = session.pop('start_time', None)  # Retrieve and remove start_time from the session
     for container in client.containers.list(all=True):
+        cpu_percent, memory_percent = get_container_stats(container)
         container_info = {
-            'container_id': container.id,
+            'container_id': container.short_id,
             'container_name': container.name,
             'image': container.image.tags[0] if container.image.tags else '',
             'status': container.status,
+            'cpu_percent': cpu_percent if container.status == 'running' else None,
+            'memory_percent': memory_percent if container.status == 'running' else None,
+            'start_time': start_time if container.id == session.get('container_id') else None
         }
         containers.append(container_info)
     return render_template('containers.html', containers=containers)
 
+def get_container_stats(container):
+    cpu_percent = None
+    memory_percent = None
+
+    if container.status == 'running':
+        try:
+            stats = container.stats(stream=False)
+            cpu_stats = stats['cpu_stats']
+            precpu_stats = stats['precpu_stats']
+
+            cpu_delta = cpu_stats['cpu_usage']['total_usage'] - precpu_stats['cpu_usage']['total_usage']
+            system_cpu_delta = cpu_stats['system_cpu_usage'] - precpu_stats['system_cpu_usage']
+            number_cpus = len(cpu_stats['cpu_usage']['percpu_usage']) or cpu_stats['online_cpus']
+
+            cpu_percent = round((cpu_delta / system_cpu_delta) * number_cpus * 100.0, 3)
+
+            memory_stats = stats['memory_stats']
+            used_memory = memory_stats['usage'] - memory_stats['stats']['cache']
+            available_memory = memory_stats['limit']
+            memory_percent = round((used_memory / available_memory) * 100.0, 3)
+        except docker.errors.APIError as e:
+            print('Error retrieving container stats:', str(e))
+
+    return cpu_percent, memory_percent
+
+
+
+
 @app.route('/start_container', methods=['POST'])
 def start_container():
     try:
-            container_id = request.form.get('container_id')
-            if container_id is None:
-                return 'Error: Container ID is missing'
-            session['container_id'] = container_id
-            
-            # Find the container based on the ID
-            container = client.containers.get(container_id)
+        container_id = request.form.get('container_id')
+        if container_id is None:
+            return 'Error: Container ID is missing'
+        
+        # Find the container based on the ID
+        container = client.containers.get(container_id)
 
-            # Start the container
-            container.start()
+        # Record the start time
+        start_time = datetime.now().isoformat()
 
-            # Flash a success message
-            flash('Container started successfully!', 'success')
+        # Start the container
+        container.start()
 
-            # Redirect back to the current page
-            return redirect(request.referrer)
+        # Store the start time in the session for the specific container
+        session['start_time'] = {container_id: start_time}
+
+        # Redirect back to the current page
+        return redirect(request.referrer)
 
     except docker.errors.NotFound as e:
         return 'Error: Container not found'
@@ -146,9 +183,6 @@ def stop_container():
 
             # Start the container
             container.stop()
-
-            # Flash a success message
-            flash('Container stopped successfully!', 'success')
 
             # Redirect back to the current page
             return redirect(request.referrer)
