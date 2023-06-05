@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DockBox</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .flashes li {
+            margin-bottom: 0.5rem;
+        }
+
+        .card-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .card {
+            width: 16rem;
+            height: 22rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow fixed w-full z-20 top-0">
+      <div class="container mx-auto px-2 py-2 flex justify-between items-center">
+          <img src="../static/Brand.png" class="h-12 ml-2 p-1 mr-2 justify-left brand" />
+          <a href="../templates/dockbox.html"></a>
+          <a href="../templates/images.html" class="text-lg">List Images</a>
+          <a href="../templates/containers.html" class="text-lg">List Containers</a>
+          <a href="../templates/create-cont.html" class="text-lg">Create Container</a>
+          <a href="../templates/login.html">
+            <img src="../static/Account.png" class="h-12 justify-right">
+          </a>
+      </div>
+    </nav>
+
+    <!-- Cards -->
+    <div class="card-container">
+        <div class="card w-64 max-w-sm rounded overflow-hidden shadow-lg m-4">
+            <img src="../static/image cd.png" alt="container" class="w-32 h-40 object-contain mx-auto my-auto">
+            <div class="px-6 py-4">
+                <div class="font-bold text-xl mb-2">List Images</div>
+                <p class="text-gray-700 text-base">
+                    List of all the images you have
+                </p>
+                <a href="../templates/list-images.html">
+                    <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4">List Images</button>
+                </a>
+            </div>
+        </div>
+
+        <div class="card w-64 max-w-sm rounded overflow-hidden shadow-lg m-4">
+            <img src="../static/Container Group.png" alt="container" class="mx-auto w-36 h-40 object-contain">
+            <div class="px-6 py-4">
+                <div class="font-bold text-xl mb-2">List Containers</div>
+                <p class="text-gray-700 text-base">
+                    List of all the containers you have
+                </p>
+                <a href="../templates/containers.html">
+                    <button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mt-4">List Containers</button>
+                </a>
+            </div>
+        </div>
+
+        <div class="card w-64 max-w-sm rounded overflow-hidden shadow-lg m-4">
+            <img src="../static/container.png" alt="container" class="w-full h-40 object-contain">
+            <div class="px-6 py-4">
+                <div class="font-bold text-xl mb-2">Create Container</div>
+                <p class="text-gray-700 text-base">
+                    Create a container
+                </p>
+                <a href="../templates/create-cont.html">
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-10">Create Now</button>
+                </a>
+            </div>
+        </div>
+
+        <div class="card w-64 max-w-sm rounded overflow-hidden shadow-lg m-4">
+            <img src="../static/billing.png" alt="container" class="w-24 h-40 object-contain mx-auto my-auto">
+            <div class="px-6 py-4">
+                <div class="font-bold text-xl mb-2">Billings</div>
+                <p class="text-gray-700 text-base">
+                    Pay your bills now
+                </p>
+                <a href="/">
+                    <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-10">Pay Now</button>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

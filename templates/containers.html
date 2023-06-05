@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Container List</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+      body {
+          padding-top: 72px; 
+      }
+  </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow fixed w-full z-20 top-0">
+      <div class="container mx-auto px-2 py-2 flex justify-between items-center">
+          <img src="../static/Brand.png" class="h-12 ml-2 p-1 mr-2 justify-left brand" />
+          <a href="../templates/dockbox.html"></a>
+          <a href="../templates/images.html" class="text-lg">List Images</a>
+          <a href="../templates/containers.html" class="text-lg">List Containers</a>
+          <a href="../templates/create-cont.html" class="text-lg">Create Container</a>
+          <a href="../templates/login.html">
+            <img src="../static/Account.png" class="h-12 justify-right">
+          </a>
+      </div>
+    </nav>
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead>
+          <tr>
+            <th class="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              ID
+            </th>
+            <th class="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              Container Name
+            </th>
+            <th class="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              Image
+            </th>
+            <th class="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              Status
+            </th>
+            <th class="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              Action
+            </th>
+            <th class="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                CPU Usage (%)
+            </th>
+            <th class="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                Memory Usage (%)
+            </th>
+            <th class="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              Start Time
+            </th>
+            <th class="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              Total Time Hours
+            </th>
+            <th class="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              Total Cost
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <!-- Table rows -->    
+          {% for container in containers %}
+          <tr>
+            <td class="px-6 py-4 whitespace-no-wrap">
+              <span class="text-sm leading-5 text-gray-500">{{ container.container_id }}</span>
+            </td>
+            <td class="px-6 py-4 whitespace-no-wrap">
+              <span class="text-sm leading-5 text-gray-500">{{ container.container_name }}</span>
+            </td>
+            <td class="px-6 py-4 whitespace-no-wrap">
+              <span class="text-sm leading-5 text-gray-500">{{ container.image }}</span>
+            </td>
+            <td class="px-6 py-4 whitespace-no-wrap">
+              <span class="text-sm leading-5 text-green-500">{{ container.status }}</span>
+            </td>
+
+            {% if container.status != 'running' %}
+              <td class="px-6 py-4 whitespace-no-wrap">
+                <form action="/start_container" method="POST">
+                    <input type="hidden" name="container_id" value="{{ container.container_id }}">
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        Start
+                    </button>
+                </form>
+              </td>
+            {% else %}
+              <td class="px-6 py-4 whitespace-no-wrap">
+                  <form action="/stop_container" method="POST">
+                      <input type="hidden" name="container_id" value="{{ container.container_id }}">
+                      <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                          Stop
+                      </button>
+                  </form>
+              </td>
+            {% endif %}
+
+            <td class="px-6 py-4 whitespace-no-wrap">
+              <span class="text-sm leading-5 text-green-500">{{ container.cpu_percent }}</span>
+            </td>
+
+            <td class="px-6 py-4 whitespace-no-wrap">
+              <span class="text-sm leading-5 text-green-500">{{ container.memory_percent }}</span>
+            </td>
+
+            <td class="px-6 py-4 whitespace-no-wrap">
+              <span class="text-sm leading-5 text-green-500">{{ container.start_time }}</span>
+            </td>
+
+            <td class="px-6 py-4 whitespace-no-wrap">
+              <span class="text-sm leading-5 text-green-500">{{ container.total_time_hours }}</span>
+            </td>
+
+            <td class="px-6 py-4 whitespace-no-wrap">
+              <span class="text-sm leading-5 text-green-500">{{ container.total_cost }}</span>
+            </td>
+
+          </tr>
+          {% endfor %}
+          <!-- End of table rows -->
+        </tbody>
+      </table> 
+</body>
+</html>
