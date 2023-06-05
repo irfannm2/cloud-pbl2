@@ -5,6 +5,7 @@ import docker.errors
 import os
 import secrets
 import datetime
+from displayDB import display_table_values
 
 
 # Uncomment the line below to enable Docker Daemon TCP connection (without TLS)
@@ -153,6 +154,14 @@ def calculate_total_time_and_cost(container_id, billing_rate):
     total_time_hours = total_time / 3600  # Convert seconds to hours
     total_cost = total_time_hours * billing_rate
     return total_time_hours, total_cost
+
+# DISPLAY TIMER DB
+@app.route('/timer')
+def display_table():
+    database = 'container_times.db'
+    table_name = 'container_times'
+    table_html = display_table_values(database, table_name)
+    return render_template('timer.html', table_html=table_html)
 
 # LIST CONTAINERS
 @app.route('/list-containers', methods=['GET', 'POST'])

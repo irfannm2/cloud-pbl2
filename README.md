@@ -24,7 +24,7 @@ Our team agreed to make branches to avoid conflicts when working simultaneously 
 repository untuk project PBL2 (Layanan Berbasis Docker) kelas Cloud Computing KOM
 
 ## Team Members
-- Fadya Nabilla ()
+- Fadya Nabila (fadyanabila)
 - Felicia Eureka Bunaren (feliseureka)
 - Hanna Rachmasari (hansoee)
 - Muhammad Irfan (irfannm2)
