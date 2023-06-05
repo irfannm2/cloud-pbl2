@@ -6,7 +6,7 @@ import os
 import secrets
 import datetime
 from displayDB import display_table_values
-
+from moreinfo import display
 
 # Uncomment the line below to enable Docker Daemon TCP connection (without TLS)
 # Don't forget to configure the Docker Desktop settings
@@ -308,6 +308,17 @@ def stop_container():
     except docker.errors.APIError as e:
         return 'Error communicating with Docker API: ' + str(e)
 
+@app.route('/more_info', methods=['POST'])
+def more_info():
+    container_id = request.form.get('container_id')
+    if container_id is None:
+        return 'Error: Container ID is missing'
+
+    # Call the display_table_values function with the container ID
+    table_html = display('container_times.db', 'container_times', container_id)
+
+    return render_template('cont-info.html', table_html=table_html)
+        
 
 if __name__ == '__main__':
     app.run(debug=True, host = '0.0.0.0', port = 81)
