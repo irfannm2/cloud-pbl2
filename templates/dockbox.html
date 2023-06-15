@@ -1,34 +1,66 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">  
     <title>DockBox</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
     <style>
         .flashes li {
-            margin-bottom: 0.5rem;
+          margin-bottom: 0.5rem;
+        }
+        .sidebar {
+          width: 250px;
+          margin-top: 40px;
+        }
+        .sidebar ul {
+          list-style-type: none;
+        }
+        .sidebar li {
+          transition: background-color 0.3s ease;
+        }
+        .sidebar li:hover {
+          box-shadow: inset 0 0 2px rgb(51, 51, 51, 0.5);
+        }
+        .sidebar a {
+          display: block;
+          padding: 12px;
+          text-decoration: none;
         }
     </style>
 </head>
-<body class="h-screen">
+<body class="h-screen bg-gray-50">
     <!-- Navigation Bar -->
-    <nav class="bg-white shadow fixed w-full z-20 top-0">
-        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <a href="/dockbox"><h1 class="text-xl font-bold text-gray-800">DockBox</h1></a>
-            <a href="/list-images">List Images</a>
-            <a href="/list-containers">List Containers</a>
-            <a href="/create-cont">Create Container</a>
-            <a href="/login"><button class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Login</button></a>
-        </div>
+    <nav class="bg-white shadow-sm fixed w-full z-20 top-0">
+      <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+          <a href="/dockbox"><h1 class="text-xl font-bold text-gray-800">DockBox</h1></a>
+          {% if 'user_id' in session %}
+            <p>Hi, <b>{{ username }}</b></p>
+          {% endif %}
+      </div>
     </nav>
+
+  <div class="flex">
+    <!-- Side Bar -->
+    <div class="sidebar bg-white shadow-sm">
+      <ul class="p-4">
+        <li class="bg-white hover:bg-white hover:shadow text-gray-800 font-bold py-2 px-8 rounded-full mt-4"><a href="/dockbox">Home</a></li>
+        <li class="bg-white hover:bg-white hover:shadow text-gray-800 font-bold py-2 px-8 rounded-full mt-4"><a href="/list-images">List Images</a></li>
+        <li class="bg-white hover:bg-white hover:shadow text-gray-800 font-bold py-2 px-8 rounded-full mt-4"><a href="/list-containers">List Containers</a></li>
+        <li class="bg-white hover:bg-white hover:shadow text-gray-800 font-bold py-2 px-8 rounded-full mt-4"><a href="/create-cont">Create Container</a></li>
+        <li class="bg-white hover:bg-white hover:shadow text-gray-800 font-bold py-2 px-8 rounded-full mt-4"><a href="/">Log Out</a></li>
+      </ul>
+    </div>
+    
     <!-- Cards -->
     <div class="flex items-center justify-center h-screen">
         <div class="flex flex-wrap justify-center">
-            <div class="max-w-sm rounded overflow-hidden shadow-lg m-4">
+            <div class="max-w-sm bg-white hover:shadow-md rounded overflow-hidden shadow-sm m-4">
                 <img src="/static/container.png" alt="container" class="w-full h-40 object-contain">
               <div class="px-6 py-4">
                 <div class="font-bold text-xl mb-2">List Images</div>
                 <p class="text-gray-700 text-base">
-                    List of all the images you have
+                    List of all of your images
                 </p>
                 <a href="/list-images">
                     <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4">List Images</button>
@@ -36,12 +68,12 @@
               </div>
             </div>
           
-            <div class="max-w-sm rounded overflow-hidden shadow-lg m-4">
+            <div class="max-w-sm bg-white hover:shadow-md rounded overflow-hidden shadow-sm m-4">
                 <img src="/static/container.png" alt="container" class="w-full h-40 object-contain">
               <div class="px-6 py-4">
                 <div class="font-bold text-xl mb-2">List Containers</div>
                 <p class="text-gray-700 text-base">
-                  List of all the containers you have
+                  List of all of your containers
                 </p>
                 <a href="/list-containers">
                     <button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded mt-4">List Containers</button>
@@ -49,7 +81,7 @@
               </div>
             </div>
     
-            <div class="max-w-sm rounded overflow-hidden shadow-lg m-4">
+            <div class="max-w-sm bg-white hover:shadow-md rounded overflow-hidden shadow-sm m-4">
                 <img src="/static/container.png" alt="container" class="w-full h-40 object-contain">
                 <div class="px-6 py-4">
                   <div class="font-bold text-xl mb-2">Create Container</div>
@@ -62,20 +94,21 @@
                 </div>
             </div>
 
-            <div class="max-w-sm rounded overflow-hidden shadow-lg m-4">
-                <img src="/static/billing.png" alt="container" class="w-full h-40 object-contain">
+            <div class="max-w-sm bg-white hover:shadow-md rounded overflow-hidden shadow-sm m-4">
+                <img src="/static/container.png" alt="container" class="w-full h-40 object-contain">
                 <div class="px-6 py-4">
                   <div class="font-bold text-xl mb-2">Billings</div>
                   <p class="text-gray-700 text-base">
                     Pay your bills now
                   </p>
-                  <a href="/">
-                    <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4">Pay Now</button>
+                  <a href="/billings">
+                    <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4">Check Your Billings</button>
                   </a>
                 </div>
             </div>
         </div>
     </div>
+  </div>
 </body>
 </html>
 

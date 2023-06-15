@@ -1,75 +1,217 @@
 import sqlite3
 from flask import Flask, render_template, request, flash, redirect, url_for, session
+from functools import wraps
+import uuid
+import re
 import docker
 import docker.errors
 import os
 import secrets
 import datetime
 from displayDB import display_table_values
-from moreinfo import display
-
-# Uncomment the line below to enable Docker Daemon TCP connection (without TLS)
-# Don't forget to configure the Docker Desktop settings
-# client = docker.DockerClient(base_url='tcp://localhost:2375')
 
 # Connect to the database
 conn = sqlite3.connect('container_times.db')
 
-# Create a table to store container times
-conn.execute('''CREATE TABLE IF NOT EXISTS container_times
+# Containers Table
+conn.execute('''CREATE TABLE IF NOT EXISTS containers
                  (container_id TEXT,
-                  start_time TEXT,
-                  stop_time TEXT,
-                  sequence_digit INTEGER,
-                  PRIMARY KEY (container_id, sequence_digit))''')
+                  container_name TEXT,
+                  user_id TEXT,
+                  image_name TEXT,
+                  FOREIGN KEY (user_id) REFERENCES users(user_id))''')
+
+# Users Table
+conn.execute('''CREATE TABLE IF NOT EXISTS users
+                (user_id TEXT,
+                username TEXT,
+                password TEXT,
+                PRIMARY KEY (user_id))''')
+
+# ContainerLogs Table
+conn.execute('''CREATE TABLE IF NOT EXISTS containerLogs 
+                (sequence_digit INTEGER,
+                container_id TEXT,
+                user_id TEXT,
+                start_time TEXT,
+                stop_time TEXT,
+                total_time FLOAT,
+                total_cost FLOAT,
+                FOREIGN KEY (container_id) REFERENCES containers(container_id),
+                FOREIGN KEY (user_id) REFERENCES users(user_id),
+                PRIMARY KEY (container_id, sequence_digit))''')
 
 # Close the database connection
 conn.close()
 
+
+# Define the Flask application obejct
 app = Flask(__name__, static_url_path='/static')
 client = docker.from_env()
 app.secret_key = os.environ.get('SECRET_KEY') or secrets.token_hex(16)
 
-@app.route('/')
-def home():
-    return render_template('/index.html')
+# SIGN UP
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
 
-@app.route('/dashboard')
-def dashboard():
-    return render_template('/dashboard.html')
+        # Validate the form inputs
+        # Check Username availability
+        if not is_username_available(username):
+            flash('Username is already taken.', 'danger')
+            return redirect(url_for('signup'))
+        
+        # Password Complexity
+        if not is_password_complex(password):
+            flash('Password must contain at least 8 characters, including at least one uppercase letter, one lowercase letter, and one digit.', 'danger')
+            return redirect(url_for('signup'))
 
-@app.route('/login')
+        # Store the user details in the database (you may need to modify the database schema)
+        # Connect to the database
+        conn = sqlite3.connect('container_times.db')
+
+        # Insert the user information into the database
+        conn.execute('''INSERT INTO users
+                (user_id, username, password) 
+                VALUES (?, ?, ?)''', (generate_user_id(), username, password))
+
+        # Commit the changes and close the database connection
+        conn.commit()
+        conn.close()
+
+        # Redirect the user to a success page or perform additional actions as needed
+        flash('Successfully registered!', 'success')
+        return redirect(url_for('login'))
+
+    # If it's a GET request, render the signup form
+    return render_template('signup.html')
+
+def generate_user_id():
+    # Generate a UUID (Universally Unique Identifier) as the user ID
+    user_id = str(uuid.uuid4())
+    return user_id
+
+def is_username_available(username):
+    conn = sqlite3.connect('container_times.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM users WHERE username = ?", (username,))
+    count = cursor.fetchone()[0]
+    conn.close()
+    return count == 0
+
+def is_password_complex(password):
+    # Check password complexity using regular expressions
+    if len(password) < 8:
+        return False
+    if not re.search(r'[A-Z]', password):
+        return False
+    if not re.search(r'[a-z]', password):
+        return False
+    if not re.search(r'\d', password):
+        return False
+    return True
+
+# LOGIN
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    return render_template('/login.html')
+    username = None
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
 
-# How to get user run the app without having to open Docker Desktop/login first
-@app.route('/docker-login', methods=['POST'])
-def docker_login():
-    try:
-        # Authenticate with Docker using the provided credentials
-        client.login(username=request.form['docker_username'], password=request.form['docker_password'])
+        # Validate the form inputs
+        if not is_valid_credentials(username, password):
+            flash('Invalid username or password. Please try again.', 'danger')
+            return redirect(url_for('login'))
 
-        # If login is successful, show a flash message and redirect to index.html
-        # It stores a message in the session,
-        # which can then be displayed on the next web page that the user visits
-        flash('Successfully logged in!')
-        return redirect(url_for('index'))
+        user_id = get_user_id(username, password)
+        # Store the user_id in the session
+        session['user_id'] = user_id
 
-    except docker.errors.APIError:
-        flash('Invalid credentials. Please try again.')
-        return redirect(url_for('home'))
+        return redirect(url_for('landing'))
+    
+    # If it's a GET request, render the login form
+    return render_template('login.html')
+
+def is_valid_credentials(username, password):
+    conn = sqlite3.connect('container_times.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM users WHERE username = ? AND password = ?", (username, password))
+    count = cursor.fetchone()[0]
+    conn.close()
+    return count == 1
+
+def get_user_id(username, password):
+    conn = sqlite3.connect('container_times.db')
+    cursor = conn.cursor()
+
+    # Query the users table to fetch the user_id based on the username and password
+    query = "SELECT user_id FROM users WHERE username = ? AND password = ?"
+    cursor.execute(query, (username, password))
+
+    # Fetch the user_id from the result
+    result = cursor.fetchone()
+
+    # Close the cursor and the connection
+    cursor.close()
+    conn.close()
+
+    if result:
+        return result[0]  # Return the user_id
+    else:
+        return None  # User not found or invalid credentials
+
+def get_username(user_id):
+    conn = sqlite3.connect('container_times.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT username FROM users WHERE user_id=?", (user_id,))
+    result = cursor.fetchone()
+    conn.close()
+    if result:
+        return result[0]
+    else:
+        return None
+
+def login_required(view):
+    @wraps(view)
+    def wrapped_view(*args, **kwargs):
+        if 'user_id' not in session:
+            # User is not logged in, redirect to login page
+            return redirect(url_for('login'))
+        return view(*args, **kwargs)
+    return wrapped_view
+
+# ALL THE PAGES THAT REQUIRED LOGIN
+@app.route('/')
+def landing():
+    return render_template('/landing.html')
 
 # go to create container form page
 @app.route('/create-cont')
+@login_required
 def create_cont():
-    return render_template('/create-cont.html')
+    if 'user_id' in session:
+        user_id = session['user_id']
+        username = get_username(user_id)
+    else:
+        return redirect(url_for('login'))
+    return render_template('/create-cont.html', username=username)
 
 @app.route('/dockbox')
+@login_required
 def dockbox():
-    return render_template('/dockbox.html')
+    if 'user_id' in session:
+        user_id = session['user_id']
+        username = get_username(user_id)
+    else:
+        return redirect(url_for('login'))
+    return render_template('/dockbox.html', username=username)
 
 
 @app.route('/create-container', methods=['POST'])
+@login_required
 def create_container():
     # Split the ":" to extract host port and container port
     host_port = container_port = None
@@ -81,22 +223,30 @@ def create_container():
 
     try:
         # Pull the container image from registry Dockerhub
-        # User input on Image Name SHOULD BE available at Dockerhub, otherwise error
         # NEXT: might want to add dropdown choices instead of text type
-        client.images.pull(request.form['image_name'])
-
+        image_name = request.form['image_name']
+        client.images.pull(image_name)
+        
         # Create the container
         container = client.containers.create(
-            request.form['image_name'],
+            image_name,
             name=request.form['container_name'],
             ports={int(container_port): int(host_port)} if host_port else int(container_port),
             detach=True
         )
 
+        conn = sqlite3.connect('container_times.db')
+        conn.execute(
+            '''INSERT INTO containers (container_id, container_name, user_id, image_name)
+            VALUES (?, ?, ?, ?)''',
+            (container.id, request.form['container_name'], session['user_id'], request.form['image_name'])
+        )
+
+        conn.commit()
+        conn.close()
         session['container_id'] = container.id
 
-        # REVISE! redirect to list containers
-        return redirect(url_for('start_container'))
+        return redirect(url_for('list_containers'))
 
     except docker.errors.NotFound as e:
         return 'Error: Container not found'
@@ -106,8 +256,14 @@ def create_container():
 
 # LIST IMAGES
 @app.route('/list-images', methods=['GET', 'POST'])
+@login_required
 def list_images():
     list_img = []
+    if 'user_id' in session:
+        user_id = session['user_id']
+        username = get_username(user_id)
+    else:
+        return redirect(url_for('login'))
     for image in client.images.list():
         image_info = {
             'image_name': image.tags[0] if image.tags else '',
@@ -115,67 +271,58 @@ def list_images():
             'size': image.attrs['Size'],
         }
         list_img.append(image_info)
-    return render_template('images.html', list_img=list_img)
-
-
-# START STOP TIMES
-# Retrieve the start and stop times from the database for each container
-def get_container_times(container_id):
-    # Create a new database connection
-    conn = sqlite3.connect('container_times.db')
-
-    cursor = conn.execute("SELECT container_id, start_time, stop_time FROM container_times WHERE container_id = ?", (container_id,))
-    container_times = cursor.fetchall()
-
-    # Close the database connection
-    conn.close()
-
-    return container_times
-
-# Calculate the duration (in seconds) for each container
-def calculate_duration(start_time, stop_time):
-    start = datetime.datetime.fromisoformat(str(start_time))
-    stop = datetime.datetime.fromisoformat(str(stop_time))
-    duration = stop - start
-    return duration.total_seconds()
-
-# Calculate the total time used and the total cost
-def calculate_total_time_and_cost(container_id, billing_rate):
-    # Retrieve container times from the database for the specific container ID
-    container_times = get_container_times(container_id)
-
-    total_time = 0
-    for container_time in container_times:
-        start_time = container_time[1]
-        stop_time = container_time[2]
-        duration = calculate_duration(start_time, stop_time)
-        total_time += duration
-
-    total_time_hours = total_time / 3600  # Convert seconds to hours
-    total_cost = total_time_hours * billing_rate
-    return total_time_hours, total_cost
+    return render_template('images.html', list_img=list_img, username=username)
 
 # DISPLAY TIMER DB
 @app.route('/timer')
+@login_required
 def display_table():
     database = 'container_times.db'
-    table_name = 'container_times'
+    table_name = 'containerLogs'
     table_html = display_table_values(database, table_name)
     return render_template('timer.html', table_html=table_html)
 
+# DISPLAY ALL TABLES IN THE DATABASE
+def get_table_names(database):
+    with sqlite3.connect(database) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        tables = cursor.fetchall()
+        table_names = [table[0] for table in tables]
+        return table_names
+
+# GOTTA RESTRICT USER WITHOUT ADMIN LEVEL FROM ACCESSING THIS
+@app.route('/database')
+@login_required
+def display_tables():
+    database = 'container_times.db'
+    tables = get_table_names(database)
+    table_html = ""
+    for table in tables:
+        table_html += "<h2>{}</h2>".format(table)
+        table_html += display_table_values(database, table)
+    return render_template('database.html', table_html=table_html)
+
 # LIST CONTAINERS
 @app.route('/list-containers', methods=['GET', 'POST'])
+@login_required
 def list_containers():
     containers = []
     start_time = session.pop('start_time', None)  # Retrieve and remove start_time from the session
-
-    # Set the billing rate per hour
-    billing_rate = 1000
+    if 'user_id' in session:
+        user_id = session['user_id']
+        username = get_username(user_id)
+    else:
+        return redirect(url_for('login'))
+    # Connect to the database
+    conn = sqlite3.connect('container_times.db')
+    cursor = conn.cursor()
+    
+    # Retrieve containers made by the logged-in user
+    cursor.execute("SELECT * FROM containers WHERE user_id = ?", (user_id,))
+    container_logs = cursor.fetchall()
     
     for container in client.containers.list(all=True):
-        # Calculate the total time used and the total cost
-        total_time_hours, total_cost = calculate_total_time_and_cost(container.id, billing_rate)
-
         cpu_percent, memory_percent = get_container_stats(container)
         container_info = {
             'container_id': container.short_id,
@@ -184,12 +331,20 @@ def list_containers():
             'status': container.status,
             'cpu_percent': cpu_percent if container.status == 'running' else None,
             'memory_percent': memory_percent if container.status == 'running' else None,
-            'start_time': start_time if container.id == session.get('container_id') else None,
-            'total_time_hours': total_time_hours,
-            'total_cost': total_cost
+            'start_time': start_time if container.id == session.get('container_id') else None
         }
-        containers.append(container_info)
-    return render_template('containers.html', containers=containers)
+        
+        # Check if the container is made by the logged-in user
+        for container_log in container_logs:
+            if container_log[0] == container.id:  # Assuming the container_id is stored in the second column
+                containers.append(container_info)
+                break
+    
+    # Close the database connection
+    conn.close()
+    
+    return render_template('containers.html', containers=containers, username=username)
+
 
 def get_container_stats(container):
     cpu_percent = None
@@ -222,7 +377,7 @@ def get_next_sequence_digit(container_id):
     conn = sqlite3.connect('container_times.db')
     
     # Query the database to retrieve the highest sequence digit for the given container ID
-    cursor = conn.execute("SELECT MAX(sequence_digit) FROM container_times WHERE container_id=?", (container_id,))
+    cursor = conn.execute("SELECT MAX(sequence_digit) FROM containerLogs WHERE container_id=?", (container_id,))
     result = cursor.fetchone()
     
     # Determine the next sequence digit
@@ -233,8 +388,17 @@ def get_next_sequence_digit(container_id):
     
     return next_sequence_digit
 
+# CALCULATE START TIME STOP TIME
+def calculate_time_difference(start_time, end_time):
+    start = datetime.datetime.fromisoformat(start_time)
+    end = datetime.datetime.fromisoformat(end_time)
+    duration = end - start
+    time_difference = float(duration.total_seconds())
+    return time_difference
+
 
 @app.route('/start_container', methods=['POST'])
+@login_required
 def start_container():
     try:
         container_id = request.form.get('container_id')
@@ -253,12 +417,11 @@ def start_container():
         # Record the start time
         start_time = datetime.datetime.now().isoformat()
 
-        # Generate a unique identifier combining container ID and sequence digit
-        unique_identifier = f"{container_id}_{get_next_sequence_digit(container_id)}"
-
         # Insert the container information into the database
-        conn.execute("INSERT INTO container_times (container_id, start_time, sequence_digit) VALUES (?, ?, ?)", (container_id, start_time, get_next_sequence_digit(container_id)))
-
+        conn.execute('''INSERT INTO containerLogs
+                        (sequence_digit, container_id, start_time, user_id)
+                        VALUES (?, ?, ?, ?)''',
+                        (get_next_sequence_digit(container_id), container_id, start_time, session['user_id']))
 
         # Commit the changes and close the database connection
         conn.commit()
@@ -274,12 +437,12 @@ def start_container():
         
 
 @app.route('/stop_container', methods=['POST'])
+@login_required
 def stop_container():
     try:
         container_id = request.form.get('container_id')
         if container_id is None:
             return 'Error: Container ID is missing'
-        session['container_id'] = container_id
             
         # Find the container based on the ID
         container = client.containers.get(container_id)
@@ -293,11 +456,28 @@ def stop_container():
         # Retrieve the current time
         stop_time = datetime.datetime.now().isoformat()
 
-        # Update the container record in the database with the stop time
-        conn.execute("UPDATE container_times SET stop_time = ? WHERE container_id = ?", (stop_time, container_id))
+        # Retrieve the start time from the containerLogs table
+        cursor = conn.cursor()
+        cursor.execute("SELECT start_time, sequence_digit FROM containerLogs WHERE container_id = ? ORDER BY sequence_digit DESC LIMIT 1", (container_id,))
+        result = cursor.fetchone()
+        if result:
+            start_time, sequence_digit = result
 
-        # Commit the changes and close the database connection
-        conn.commit()
+            # Calculate the time difference
+            time_difference = calculate_time_difference(start_time, stop_time)
+            print("Time Difference:", time_difference)
+
+            # Calculate the total cost based on time difference and the billing rate (e.g., $5.00 per hour)
+            billing_rate = 5.00
+            total_cost = time_difference * billing_rate
+
+            # Update the container record in the database with the stop time and time difference
+            cursor.execute("UPDATE containerLogs SET stop_time = ?, total_time = ?, total_cost = ? WHERE container_id = ? AND sequence_digit = ?", (stop_time, time_difference, total_cost, container_id, sequence_digit))
+            conn.commit()
+        else:
+            print("Start time not found for the container ID:", container_id)
+
+        # Close the database connection
         conn.close()
 
         # Redirect back to the current page
@@ -307,17 +487,6 @@ def stop_container():
         return 'Error: Container not found'
     except docker.errors.APIError as e:
         return 'Error communicating with Docker API: ' + str(e)
-
-@app.route('/more_info', methods=['POST'])
-def more_info():
-    container_id = request.form.get('container_id')
-    if container_id is None:
-        return 'Error: Container ID is missing'
-
-    # Call the display_table_values function with the container ID
-    table_html = display('container_times.db', 'container_times', container_id)
-
-    return render_template('cont-info.html', table_html=table_html)
         
 
 if __name__ == '__main__':
