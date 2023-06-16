@@ -5,7 +5,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
     <style>
       body {
-          padding-top: 72px; 
+          padding-top: 62px; 
       }
   </style>
 </head>
@@ -25,6 +25,7 @@
     {% if error_message %}
       <p>{{ error_message }}</p>
     {% endif %}
+    <div id="container-table">
       <table class="min-w-full divide-y divide-gray-200">
         <thead>
           <tr>
@@ -49,6 +50,9 @@
             <th class="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                 Memory Usage (%)
             </th>
+            <th class="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+              
+          </th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
@@ -95,10 +99,31 @@
             <td class="px-6 py-4 whitespace-no-wrap">
               <span class="text-sm leading-5 text-green-500">{{ container.memory_percent }}</span>
             </td>
+            <td class="px-6 py-4 whitespace-no-wrap">
+              <form action="/delete_container" method="POST">
+                <input type="hidden" name="container_id" value="{{ container.container_id }}">
+                <button type="submit" class="text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+                    <svg class="mr-1 -ml-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    Delete
+                </button>
+            </form>            
+              
+          </td>
           </tr>
           {% endfor %}
           <!-- End of table rows -->
         </tbody>
       </table> 
+    </div>
+    <script>
+      // JavaScript/jQuery code to append the table to the specified container element
+      $(document).ready(function() {
+          var containerTable = '{{ container_table }}'; // Retrieve the container-table element ID from the parameter
+          var tableContent = $('#container-table').html(); // Retrieve the table content
+          $(containerTable).html(tableContent); // Append the table to the specified container element
+      });
+    </script>
 </body>
 </html>

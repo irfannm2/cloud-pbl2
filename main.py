@@ -9,6 +9,8 @@ import os
 import secrets
 import datetime
 from displayDB import display_table_values
+import random
+import socket
 
 # Connect to the database
 conn = sqlite3.connect('container_times.db')
@@ -202,46 +204,110 @@ def create_cont():
 @app.route('/dockbox')
 @login_required
 def dockbox():
+    list_img = []
     if 'user_id' in session:
         user_id = session['user_id']
         username = get_username(user_id)
     else:
         return redirect(url_for('login'))
-    return render_template('/dockbox.html', username=username)
+    
+    for image in client.images.list():
+        image_info = {
+            'image_name': image.tags[0] if image.tags else '',
+            'created': image.attrs['Created'],
+            'size': image.attrs['Size'],
+        }
+        list_img.append(image_info)
+                
+        # Limit the containers to 3
+        if len(list_img) >= 3:
+            break
+        
 
+    containers = []
+    start_time = session.pop('start_time', None)  # Retrieve and remove start_time from the session
+    
+    # Connect to the database
+    conn = sqlite3.connect('container_times.db')
+    cursor = conn.cursor()
+    
+    # Retrieve containers made by the logged-in user
+    cursor.execute("SELECT * FROM containers WHERE user_id = ?", (user_id,))
+    container_logs = cursor.fetchall()
+    
+    for container in client.containers.list(all=True):
+        cpu_percent, memory_percent = get_container_stats(container)
+        container_info = {
+            'container_id': container.short_id,
+            'container_name': container.name,
+            'image': container.image.tags[0] if container.image.tags else '',
+            'status': container.status,
+            'cpu_percent': cpu_percent if container.status == 'running' else None,
+            'memory_percent': memory_percent if container.status == 'running' else None,
+            'start_time': start_time if container.id == session.get('container_id') else None
+        }
+        
+        # Check if the container is made by the logged-in user
+        for container_log in container_logs:
+            if container_log[0] == container.id:  # Assuming the container_id is stored in the second column
+                containers.append(container_info)
+                break
+                
+        # Limit the containers to 3
+        if len(containers) >= 3:
+            break
+    
+    # Close the database connection
+    conn.close()
+    
+    return render_template('dockbox.html', list_img=list_img, containers=containers, username=username)
+
+def is_port_in_use(port):
+    # Create a socket object
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+    try:
+        # Try to bind the socket to the given port
+        sock.bind(('localhost', port))
+        # Port is available
+        return False
+    except socket.error:
+        # Port is already in use
+        return True
+    finally:
+        # Close the socket
+        sock.close()
 
 @app.route('/create-container', methods=['POST'])
 @login_required
 def create_container():
-    # Split the ":" to extract host port and container port
-    host_port = container_port = None
-    port_input = request.form['container_port']
-    if ':' in port_input:
-        host_port, container_port = port_input.split(':')
-    else:
-        container_port = port_input
-
     try:
-        # Pull the container image from registry Dockerhub
-        # NEXT: might want to add dropdown choices instead of text type
         image_name = request.form['image_name']
         client.images.pull(image_name)
-        
+
+        # Generate random port number for the container
+        container_port = random.randint(1024, 65535)
+        host_port = None
+
+        # Check if the random port is already in use
+        while is_port_in_use(container_port):
+            container_port = random.randint(1024, 65535)
+
         # Create the container
         container = client.containers.create(
             image_name,
             name=request.form['container_name'],
-            ports={int(container_port): int(host_port)} if host_port else int(container_port),
+            ports={container_port: None},
             detach=True
         )
 
+        # Store container information in the database
         conn = sqlite3.connect('container_times.db')
         conn.execute(
             '''INSERT INTO containers (container_id, container_name, user_id, image_name)
             VALUES (?, ?, ?, ?)''',
             (container.id, request.form['container_name'], session['user_id'], request.form['image_name'])
         )
-
         conn.commit()
         conn.close()
         session['container_id'] = container.id
@@ -249,6 +315,30 @@ def create_container():
         return redirect(url_for('list_containers'))
 
     except docker.errors.NotFound as e:
+        return 'Error: Container not found'
+    except docker.errors.APIError as e:
+        return 'Error communicating with Docker API: ' + str(e)
+
+@app.route('/delete_container', methods=['POST'])
+def delete_container():
+    try:
+        container_id = request.form['container_id']
+        container = client.containers.get(container_id)
+        container.stop()  # Stop the container before deleting
+        container.remove()  # Delete the container
+
+        # Remove container information from the database
+        conn = sqlite3.connect('container_times.db')
+        conn.execute(
+            "DELETE FROM containers WHERE container_id = ?",
+            (container_id,)
+        )
+        conn.commit()
+        conn.close()
+
+        return redirect(url_for('list_containers'))
+
+    except docker.errors.NotFound:
         return 'Error: Container not found'
     except docker.errors.APIError as e:
         return 'Error communicating with Docker API: ' + str(e)
