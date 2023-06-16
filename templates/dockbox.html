@@ -53,10 +53,10 @@
     </div>
   
     <!-- Main Content -->
-    <div class="flex-auto p-8 mt-10">
+    <div class="p-3 mt-10">
       <!-- Tables -->
-      <div class="max-w-max bg-white hover:shadow-md rounded overflow-hidden shadow-sm m-4">
-        <div class="px-6 py-4">
+      <div class="max-w-max bg-white hover:shadow-md rounded-xl overflow-hidden shadow-sm m-4">
+        <div class="px-6 py-3">
           <div class="font-bold text-xl mb-2">Last Created Containers</div>
           <div class="overflow-x-auto">
             <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -64,16 +64,16 @@
                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                   <!-- Table header -->
                   <tr>
-                    <th class="px-6 py-3">
+                    <th class="px-5 py-3">
                       ID
                     </th>
-                    <th class="px-6 py-3">
+                    <th class="px-5 py-3">
                       Container Name
                     </th>
-                    <th class="px-6 py-3">
+                    <th class="px-5 py-3">
                       Image
                     </th>
-                    <th class="px-6 py-3">
+                    <th class="px-5 py-3">
                       Status
                     </th>
                   </tr>
@@ -82,16 +82,16 @@
                   <!-- Table rows -->
                   {% for container in containers %}
                   <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-                    <td class="px-6 py-4">
+                    <td class="px-5 py-3">
                       <span class="text-sm leading-5 text-gray-500">{{ container.container_id }}</span>
                     </td>
-                    <th class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                    <th class="px-5 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                       <span class="text-sm leading-5 text-gray-500">{{ container.container_name }}</span>
                     </th>
-                    <td class="px-6 py-4">
+                    <td class="px-5 py-3">
                       <span class="text-sm leading-5 text-gray-500">{{ container.image }}</span>
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="px-5 py-3">
                       <span class="text-sm leading-5 text-green-500">{{ container.status }}</span>
                     </td>
                   </tr>
@@ -102,7 +102,7 @@
           </div>
           <div class="flex justify-end mt-4 text-center">
             <a href="/list-containers">
-              <button class="bg-gray-900 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded text-sm">
+              <button class="bg-gray-900 hover:bg-gray-700 text-white font-bold py-1 px-2 rounded text-xs mb-2">
                 View All Containers
               </button>              
             </a>
@@ -111,8 +111,8 @@
       </div>
     
 
-      <div class="max-w-max bg-white hover:shadow-md rounded overflow-hidden shadow-sm m-4">
-        <div class="px-6 py-4">
+      <div class="max-w-max bg-white hover:shadow-md rounded-xl overflow-hidden shadow-sm m-4">
+        <div class="px-6 py-3">
           <div class="font-bold text-xl mb-2">Images List</div>
             <div class="overflow-x-auto">
                 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -120,13 +120,13 @@
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                       <!-- Table header -->
                       <tr>
-                        <th class="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-5 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                           Image Name
                         </th>
-                        <th class="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-5 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                           Created
                         </th>
-                        <th class="px-6 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
+                        <th class="px-5 py-3 bg-gray-100 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
                           Size
                         </th>
                       </tr>
@@ -135,13 +135,13 @@
                       <!-- Table rows -->
                       {% for image in list_img %}
                       <tr>
-                        <td class="px-6 py-4 whitespace-no-wrap">
+                        <td class="px-5 py-3 whitespace-no-wrap">
                           <span class="text-sm leading-5 text-gray-500">{{ image.image_name }}</span>
                         </td>
-                        <td class="px-6 py-4 whitespace-no-wrap">
+                        <td class="px-5 py-3 whitespace-no-wrap">
                           <span class="text-sm leading-5 text-gray-500">{{ image.created }}</span>
                         </td>
-                        <td class="px-6 py-4 whitespace-no-wrap">
+                        <td class="px-5 py-3 whitespace-no-wrap">
                           <span class="text-sm leading-5 text-gray-500">{{ image.size }}</span>
                         </td>
                       </tr>
@@ -152,7 +152,7 @@
             </div>
             <div class="flex justify-end mt-4 text-center">
                 <a href="/list-images">
-                    <button class="bg-gray-900 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded text-sm">
+                    <button class="bg-gray-900 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded text-xs mb-2">
                         View All Images
                     </button>
                 </a>
@@ -178,13 +178,13 @@
           </div>
       
           <div class="max-w-sm bg-white hover:shadow-md rounded overflow-hidden shadow-sm m-4">
-            <img src="/static/container.png" alt="container" class="w-full h-40 object-contain">
+            <img src="/static/billing.png" alt="container" class="w-full h-40 object-contain">
             <div class="px-6 py-4">
               <div class="font-bold text-xl mb-2">Billings</div>
               <p class="text-gray-700 text-base">
                 Pay your bills now
               </p>
-              <a href="/billings">
+              <a href="/invoice">
                 <button class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4">Check Your Billings</button>
               </a>
             </div>

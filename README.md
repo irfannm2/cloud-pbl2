@@ -22,5 +22,4 @@ repository untuk project PBL2 (Layanan Berbasis Docker) kelas Cloud Computing KO
 - [ ] Schedule Container: Task 8
 
 ## To be Fixed
-- start stop tiap containers (sip)
-- tombol back lur 
+- scheduling 

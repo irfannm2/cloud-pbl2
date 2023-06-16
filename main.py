@@ -306,11 +306,11 @@ def create_container():
         conn.execute(
             '''INSERT INTO containers (container_id, container_name, user_id, image_name)
             VALUES (?, ?, ?, ?)''',
-            (container.id, request.form['container_name'], session['user_id'], request.form['image_name'])
+            (container.short_id, request.form['container_name'], session['user_id'], request.form['image_name'])
         )
         conn.commit()
         conn.close()
-        session['container_id'] = container.id
+        session['container_id'] = container.short_id
 
         return redirect(url_for('list_containers'))
 
@@ -362,15 +362,6 @@ def list_images():
         }
         list_img.append(image_info)
     return render_template('images.html', list_img=list_img, username=username)
-
-# DISPLAY TIMER DB
-@app.route('/timer')
-@login_required
-def display_table():
-    database = 'container_times.db'
-    table_name = 'containerLogs'
-    table_html = display_table_values(database, table_name)
-    return render_template('timer.html', table_html=table_html)
 
 # DISPLAY ALL TABLES IN THE DATABASE
 def get_table_names(database):
@@ -426,7 +417,7 @@ def list_containers():
         
         # Check if the container is made by the logged-in user
         for container_log in container_logs:
-            if container_log[0] == container.id:  # Assuming the container_id is stored in the second column
+            if container_log[0] == container.short_id:  # Assuming the container_id is stored in the second column
                 containers.append(container_info)
                 break
     
@@ -557,9 +548,9 @@ def stop_container():
             time_difference = calculate_time_difference(start_time, stop_time)
             print("Time Difference:", time_difference)
 
-            # Calculate the total cost based on time difference and the billing rate (e.g., $5.00 per hour)
-            billing_rate = 5.00
-            total_cost = time_difference * billing_rate
+            # Calculate the total cost based on time difference and the billing rate (e.g., $1.00 per second)
+            billing_rate = 0.05
+            total_cost = round(time_difference * billing_rate, 2)
 
             # Update the container record in the database with the stop time and time difference
             cursor.execute("UPDATE containerLogs SET stop_time = ?, total_time = ?, total_cost = ? WHERE container_id = ? AND sequence_digit = ?", (stop_time, time_difference, total_cost, container_id, sequence_digit))
@@ -578,6 +569,31 @@ def stop_container():
     except docker.errors.APIError as e:
         return 'Error communicating with Docker API: ' + str(e)
         
+
+
+@app.route('/invoice')
+def display_invoice():
+    rows = []
+    conn = sqlite3.connect('container_times.db')
+    cursor = conn.cursor()
+
+    # Query to fetch containerLogs values along with container_name and total_cost from containers table
+    query = '''SELECT containerLogs.container_id, containers.container_name, containerLogs.total_time, containerLogs.total_cost
+           FROM containerLogs
+           INNER JOIN containers ON containerLogs.container_id = containers.container_id
+           WHERE containerLogs.total_cost IS NOT NULL'''
+
+    # Execute the query
+    cursor.execute(query)
+
+    # Fetch all rows
+    rows = cursor.fetchall()
+
+    # Close the cursor and the connection
+    cursor.close()
+    conn.close()
+
+    return render_template('invoice.html', container_logs=rows)
 
 if __name__ == '__main__':
     app.run(debug=True, host = '0.0.0.0', port = 81)
