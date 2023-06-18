@@ -28,6 +28,7 @@ conn.execute('''CREATE TABLE IF NOT EXISTS users
                 (user_id TEXT,
                 username TEXT,
                 password TEXT,
+                is_admin BOOLEAN,
                 PRIMARY KEY (user_id))''')
 
 # ContainerLogs Table
@@ -74,10 +75,13 @@ def signup():
         # Connect to the database
         conn = sqlite3.connect('container_times.db')
 
+        # Assign is_admin value
+        is_admin = False  # Set the default value as False
+
         # Insert the user information into the database
         conn.execute('''INSERT INTO users
-                (user_id, username, password) 
-                VALUES (?, ?, ?)''', (generate_user_id(), username, password))
+                (user_id, username, password, is_admin) 
+                VALUES (?, ?, ?, ?)''', (generate_user_id(), username, password, is_admin))
 
         # Commit the changes and close the database connection
         conn.commit()
@@ -372,10 +376,34 @@ def get_table_names(database):
         table_names = [table[0] for table in tables]
         return table_names
 
-# GOTTA RESTRICT USER WITHOUT ADMIN LEVEL FROM ACCESSING THIS
+def is_user_admin(user_id):
+    # Connect to the database
+    conn = sqlite3.connect('container_times.db')
+
+    # Create a cursor object to execute SQL statements
+    cursor = conn.cursor()
+
+    # Execute the SELECT statement to retrieve the is_admin value for the user
+    query = "SELECT is_admin FROM users WHERE user_id = ?"
+    cursor.execute(query, (user_id,))
+    result = cursor.fetchone()
+
+    # Close the database connection
+    conn.close()
+
+    # Check if the result exists and if the user is an admin
+    if result is not None and result[0]:
+        return True
+    else:
+        return False
+
 @app.route('/database')
 @login_required
 def display_tables():
+    user_id = session['user_id']
+    if not is_user_admin(user_id):
+        return "Error: Access denied."
+
     database = 'container_times.db'
     tables = get_table_names(database)
     table_html = ""
@@ -383,6 +411,7 @@ def display_tables():
         table_html += "<h2>{}</h2>".format(table)
         table_html += display_table_values(database, table)
     return render_template('database.html', table_html=table_html)
+
 
 # LIST CONTAINERS
 @app.route('/list-containers', methods=['GET', 'POST'])
@@ -548,7 +577,7 @@ def stop_container():
             time_difference = calculate_time_difference(start_time, stop_time)
             print("Time Difference:", time_difference)
 
-            # Calculate the total cost based on time difference and the billing rate (e.g., $1.00 per second)
+            # Calculate the total cost based on time difference and the billing rate (e.g., Rp0.05 per second)
             billing_rate = 0.05
             total_cost = round(time_difference * billing_rate, 2)
 

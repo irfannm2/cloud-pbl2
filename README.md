@@ -3,6 +3,12 @@
 ## Overview
 repository untuk project PBL2 (Layanan Berbasis Docker) kelas Cloud Computing KOM
 
+## How to run Dockbox
+1. Make sure you have mysqli installed
+2. Create container_times.db
+2. Run main.py
+3. addAdmin.py and customQuery.py are made to query the db (not used in the main project)
+
 ## Team Members
 - Fadya Nabila (fadyanabila)
 - Felicia Eureka Bunaren (feliseureka)

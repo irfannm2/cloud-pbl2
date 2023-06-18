@@ -10,7 +10,6 @@
           margin-bottom: 0.5rem;
         }
         .sidebar {
-          width: 250px;
           margin-top: 40px;
         }
         .sidebar ul {
@@ -20,7 +19,7 @@
           transition: background-color 0.3s ease;
         }
         .sidebar li:hover {
-          box-shadow: inset 0 0 2px rgb(51, 51, 51, 0.5);
+          box-shadow: inset 0 0 2px rgba(160, 160, 160, 0.5);
         }
         .sidebar a {
           display: block;
@@ -29,7 +28,7 @@
         }
     </style>
 </head>
-<body class="h-screen bg-gray-50">
+<body class="h-screen bg-gray-100">
     <!-- Navigation Bar -->
     <nav class="bg-white shadow-sm fixed w-full z-20 top-0">
       <div class="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -42,13 +41,13 @@
 
   <div class="container flex">
     <!-- Side Bar -->
-    <div class="sidebar bg-white shadow-sm">
+    <div class="sidebar text-white text-sm bg-gray-900">
       <ul class="p-4">
-        <li class="bg-white hover:bg-white hover:shadow text-gray-800 font-bold py-2 px-8 rounded-full mt-4"><a href="/dockbox" class="flex items-center"><span class="ml-2">Home</span></a></li>        
-        <li class="bg-white hover:bg-white hover:shadow text-gray-800 font-bold py-2 px-8 rounded-full mt-4"><a href="/list-images">List Images</a></li>
-        <li class="bg-white hover:bg-white hover:shadow text-gray-800 font-bold py-2 px-8 rounded-full mt-4"><a href="/list-containers">List Containers</a></li>
-        <li class="bg-white hover:bg-white hover:shadow text-gray-800 font-bold py-2 px-8 rounded-full mt-4"><a href="/create-cont">Create Container</a></li>
-        <li class="bg-white hover:bg-white hover:shadow text-gray-800 font-bold py-2 px-8 rounded-full mt-4"><a href="/">Log Out</a></li>
+        <li class="bg-gray-900 hover:bg-gray-900 py-2 px-8 rounded-full mt-4"><a href="/dockbox"><b>Home</b></a></li>        
+        <li class="bg-gray-900 hover:bg-gray-900 py-2 px-8 rounded-full mt-4"><a href="/list-images">List Images</a></li>
+        <li class="bg-gray-900 hover:bg-gray-900 py-2 px-8 rounded-full mt-4"><a href="/list-containers">List Containers</a></li>
+        <li class="bg-gray-900 hover:bg-gray-900 py-2 px-8 rounded-full mt-4"><a href="/create-cont">Create Container</a></li>
+        <li class="bg-gray-900 hover:bg-gray-900 py-2 px-8 rounded-full mt-4"><a href="/">Log Out</a></li>
       </ul>
     </div>
   
@@ -57,7 +56,7 @@
       <!-- Tables -->
       <div class="max-w-max bg-white hover:shadow-md rounded-xl overflow-hidden shadow-sm m-4">
         <div class="px-6 py-3">
-          <div class="font-bold text-xl mb-2">Last Created Containers</div>
+          <div class="font-bold text-xl text-gray-900 mb-2">Last Created Containers</div>
           <div class="overflow-x-auto">
             <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
               <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -113,7 +112,7 @@
 
       <div class="max-w-max bg-white hover:shadow-md rounded-xl overflow-hidden shadow-sm m-4">
         <div class="px-6 py-3">
-          <div class="font-bold text-xl mb-2">Images List</div>
+          <div class="font-bold text-xl text-gray-900 mb-2">Images List</div>
             <div class="overflow-x-auto">
                 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                   <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -162,12 +161,12 @@
       </div>
 
       <!-- CARDS -->
-      <div class="flex justify-center items-center h-full pt-8 mt-10">
+      <div class="flex justify-center items-center h-full pt-8">
         <div class="flex flex-col">
-          <div class="max-w-2xl bg-white hover:shadow-md rounded overflow-hidden shadow-sm m-4">
-            <img src="/static/container.png" alt="container" class="w-full h-40 object-contain">
+          <div class="w-full bg-white hover:shadow-md rounded-xl overflow-hidden shadow-sm mt-9">
+            <img src="/static/container.png" alt="container" class="w-screen h-40 object-contain">
             <div class="px-6 py-4">
-              <div class="font-bold text-xl mb-2">Create Container</div>
+              <div class="font-bold text-xl text-gray-900 mb-2">Create Container</div>
               <p class="text-gray-700 text-base">
                 Create a container
               </p>
@@ -177,10 +176,10 @@
             </div>
           </div>
       
-          <div class="max-w-sm bg-white hover:shadow-md rounded overflow-hidden shadow-sm m-4">
-            <img src="/static/billing.png" alt="container" class="w-full h-40 object-contain">
+          <div class="w-full bg-white hover:shadow-md rounded-xl overflow-hidden shadow-sm mt-3">
+            <img src="/static/billing.png" alt="container" class="w-screen h-40 mt-8 object-contain">
             <div class="px-6 py-4">
-              <div class="font-bold text-xl mb-2">Billings</div>
+              <div class="font-bold text-xl text-gray-900 mb-2">Billings</div>
               <p class="text-gray-700 text-base">
                 Pay your bills now
               </p>
